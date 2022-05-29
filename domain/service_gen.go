@@ -18,6 +18,10 @@ func NewServiceGen(module string) ServiceGen {
 }
 
 func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
+	for k, v := range GetParamSet().data {
+		log.Println("k:", k, " v:", v)
+	}
+
 	for _, f := range plugin.Files {
 		if len(f.Services) == 0 {
 			continue
