@@ -16,3 +16,7 @@ func (p *ParamSet) Set(key string, value string) error {
 	p.data[key] = value
 	return nil
 }
+
+func (p *ParamSet) Get(key string) string {
+	return p.data[key]
+}

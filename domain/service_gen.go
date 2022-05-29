@@ -8,17 +8,15 @@ import (
 )
 
 type ServiceGen struct {
-	module string
 }
 
-func NewServiceGen(module string) ServiceGen {
-	return ServiceGen{
-		module: module,
-	}
+func NewServiceGen() ServiceGen {
+	return ServiceGen{}
 }
 
 func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
-	for k, v := range GetParamSet().data {
+	ps := GetParamSet()
+	for k, v := range ps.data {
 		log.Println("k:", k, " v:", v)
 	}
 
@@ -28,13 +26,13 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		}
 
 		for _, s := range f.Services {
-			log.Println(" f.module:", sg.module)
+			log.Println(" f.module:", ps.Get("module"))
 			log.Println(" f.GeneratedFilenamePrefix:", f.GeneratedFilenamePrefix)
 			log.Println(" f.GoImportPath:", f.GoImportPath)
 			log.Println(" f.GoPackageName:", f.GoPackageName)
 			log.Println(" s.GoName:", s.GoName)
 
-			fileName := sg.module + "internal/delivery/" + string(f.GoPackageName) + "/" + s.GoName + ".impl.go"
+			fileName := ps.Get("module") + "internal/delivery/" + string(f.GoPackageName) + "/" + s.GoName + ".impl.go"
 
 			t := plugin.NewGeneratedFile(fileName, f.GoImportPath)
 
