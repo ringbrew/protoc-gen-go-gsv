@@ -3,6 +3,7 @@ package domain
 import (
 	"bytes"
 	"google.golang.org/protobuf/compiler/protogen"
+	"log"
 	"text/template"
 )
 
@@ -21,7 +22,12 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		}
 
 		for _, s := range f.Services {
-			fileName := "./" + f.GeneratedFilenamePrefix + "." + s.GoName + ".impl.go"
+			log.Println(" f.GeneratedFilenamePrefix:", f.GeneratedFilenamePrefix)
+			log.Println(" f.GoImportPath:", f.GoImportPath)
+			log.Println(" f.GoPackageName:", f.GoPackageName)
+			log.Println(" s.GoName:", s.GoName)
+
+			fileName := f.GeneratedFilenamePrefix + ".impl.go"
 
 			t := plugin.NewGeneratedFile(fileName, f.GoImportPath)
 
