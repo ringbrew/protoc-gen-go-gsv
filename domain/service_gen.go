@@ -7,10 +7,13 @@ import (
 )
 
 type ServiceGen struct {
+	module string
 }
 
-func NewServiceGen() ServiceGen {
-	return ServiceGen{}
+func NewServiceGen(module string) ServiceGen {
+	return ServiceGen{
+		module: module,
+	}
 }
 
 func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {

@@ -7,11 +7,10 @@ import (
 )
 
 func main() {
-	sg := domain.NewServiceGen()
 	var flags flag.FlagSet
-	flags.String("module", "", "")
+	module := flags.String("module", "", "")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
-	}.Run(sg.Generate)
+	}.Run(domain.NewServiceGen(*module).Generate)
 }
