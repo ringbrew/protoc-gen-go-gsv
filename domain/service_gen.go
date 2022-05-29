@@ -25,14 +25,14 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 
 			t := plugin.NewGeneratedFile(fileName, f.GoImportPath)
 
-			tmpl, err := template.New("serviceGenImpl").Parse(serviceGenImpl)
+			tmpl, err := template.New("serviceGenImpl").Delims("[[", "]]").Parse(serviceGenImpl)
 			if err != nil {
 				return err
 			}
 
 			var tmplResult bytes.Buffer
 
-			if err := tmpl.Delims("[[", "]]").Execute(&tmplResult, map[string]interface{}{
+			if err := tmpl.Execute(&tmplResult, map[string]interface{}{
 				"packageName": f.GoPackageName,
 				"serviceName": s.GoName,
 			}); err != nil {
