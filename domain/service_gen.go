@@ -10,10 +10,8 @@ type ServiceGen struct {
 	module string
 }
 
-func NewServiceGen(module string) ServiceGen {
-	return ServiceGen{
-		module: module,
-	}
+func NewServiceGen() ServiceGen {
+	return ServiceGen{}
 }
 
 func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
@@ -23,7 +21,7 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		}
 
 		for _, s := range f.Services {
-			fileName := "./internal/domain/delivery/" + f.GeneratedFilenamePrefix + "." + s.GoName + ".impl.go"
+			fileName := "./" + f.GeneratedFilenamePrefix + "." + s.GoName + ".impl.go"
 
 			t := plugin.NewGeneratedFile(fileName, f.GoImportPath)
 
@@ -34,7 +32,7 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 
 			var tmplResult bytes.Buffer
 
-			if err := tmpl.Execute(&tmplResult, map[string]interface{}{
+			if err := tmpl.Delims("[[", "]]").Execute(&tmplResult, map[string]interface{}{
 				"packageName": f.GoPackageName,
 				"serviceName": s.GoName,
 			}); err != nil {

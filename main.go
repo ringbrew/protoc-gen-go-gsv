@@ -8,9 +8,8 @@ import (
 
 func main() {
 	var flags flag.FlagSet
-	module := flags.String("module", "", "")
 
 	protogen.Options{
 		ParamFunc: flags.Set,
-	}.Run(domain.NewServiceGen(*module).Generate)
+	}.Run(domain.NewServiceGen().Generate)
 }
