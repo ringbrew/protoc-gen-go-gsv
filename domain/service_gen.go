@@ -15,6 +15,8 @@ func NewServiceGen() ServiceGen {
 }
 
 func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
+	log.Println(plugin.Request.GetParameter())
+
 	ps := GetParamSet()
 	for k, v := range ps.data {
 		log.Println("k:", k, " v:", v)

@@ -27,7 +27,7 @@ func (s *Service) Remark() string {
 func (s *Service) Description() service.Description {
 	return service.Description{
 		Valid:           true,
-		GrpcServiceDesc: []grpc.ServiceDesc{[[.packageName]][[.serviceName]]_ServiceDesc},
+		GrpcServiceDesc: []grpc.ServiceDesc{[[.packageName]].[[.serviceName]]_ServiceDesc},
 		GrpcGateway:     nil,
 	}
 }`
