@@ -3,7 +3,7 @@ package domain
 import (
 	"bytes"
 	"google.golang.org/protobuf/compiler/protogen"
-	"log"
+	"os"
 	"text/template"
 )
 
@@ -15,26 +15,18 @@ func NewServiceGen() ServiceGen {
 }
 
 func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
-	log.Println(plugin.Request.GetParameter())
-
-	ps := GetParamSet()
-	for k, v := range ps.data {
-		log.Println("k:", k, " v:", v)
-	}
-
 	for _, f := range plugin.Files {
 		if len(f.Services) == 0 {
 			continue
 		}
 
 		for _, s := range f.Services {
-			log.Println(" f.module:", ps.Get("module"))
-			log.Println(" f.GeneratedFilenamePrefix:", f.GeneratedFilenamePrefix)
-			log.Println(" f.GoImportPath:", f.GoImportPath)
-			log.Println(" f.GoPackageName:", f.GoPackageName)
-			log.Println(" s.GoName:", s.GoName)
+			fileName := "internal/delivery/" + string(f.GoPackageName) + "/" + s.GoName + ".impl.go"
 
-			fileName := ps.Get("module") + "internal/delivery/" + string(f.GoPackageName) + "/" + s.GoName + ".impl.go"
+			// 已经创建的不管.
+			if _, err := os.Stat(fileName); err == nil {
+				continue
+			}
 
 			t := plugin.NewGeneratedFile(fileName, f.GoImportPath)
 

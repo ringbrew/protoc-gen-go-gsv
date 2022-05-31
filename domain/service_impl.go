@@ -17,7 +17,7 @@ func NewService() service.Service {
 }
 
 func (s *Service) Name() string {
-	return "[[.serviceName]]"
+	return "[[.packageName]].[[.serviceName]]"
 }
 
 func (s *Service) Remark() string {
