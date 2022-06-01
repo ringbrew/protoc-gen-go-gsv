@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
+	"regexp"
 	"strings"
 	"testing"
 	"text/template"
@@ -64,4 +65,25 @@ func TestParam(t *testing.T) {
 	}
 
 	log.Println(params)
+}
+
+func TestCamelToSnake(t *testing.T) {
+	packageName := "example"
+	serviceName := "ExampleXXXXService"
+
+	if len(serviceName) > len(packageName) && strings.HasPrefix(strings.ToLower(serviceName), strings.ToLower(packageName)) {
+		serviceName = serviceName[len(packageName):]
+	}
+
+	var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+
+	toSnakeCase := func(str string) string {
+		snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
+		snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
+		return strings.ToLower(snake)
+	}
+
+	log.Println(serviceName)
+	log.Println(toSnakeCase(serviceName))
 }
