@@ -11,7 +11,7 @@ import (
 
 type [[.serviceName]] struct {
 	ctx *domain.ServiceContext
-	[[.packageName]].Unimplemented[[.serviceName]]Server
+	[[.packageName]].Unimplemented[[.protoServiceName]]Server
 }
 
 func New[[.serviceName]](ctx *domain.ServiceContext) service.Service {
@@ -21,7 +21,7 @@ func New[[.serviceName]](ctx *domain.ServiceContext) service.Service {
 }
 
 func (s *[[.serviceName]]) Name() string {
-	return "[[.packageName]].[[.serviceName]]"
+	return "[[.packageName]].[[.protoServiceName]]"
 }
 
 func (s *[[.serviceName]]) Remark() string {
@@ -31,7 +31,7 @@ func (s *[[.serviceName]]) Remark() string {
 func (s *[[.serviceName]]) Description() service.Description {
 	return service.Description{
 		Valid:           true,
-		GrpcServiceDesc: []grpc.ServiceDesc{[[.packageName]].[[.serviceName]]_ServiceDesc},
+		GrpcServiceDesc: []grpc.ServiceDesc{[[.packageName]].[[.protoServiceName]]_ServiceDesc},
 		GrpcGateway:     nil,
 	}
 }`

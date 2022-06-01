@@ -68,9 +68,10 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 			var tmplResult bytes.Buffer
 
 			if err := tmpl.Execute(&tmplResult, map[string]interface{}{
-				"module":      params["module"],
-				"packageName": f.GoPackageName,
-				"serviceName": serviceName,
+				"module":           params["module"],
+				"packageName":      f.GoPackageName,
+				"serviceName":      serviceName,
+				"protoServiceName": s.GoName,
 			}); err != nil {
 				return err
 			}
