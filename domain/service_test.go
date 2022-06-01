@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
+	"strings"
 	"testing"
 	"text/template"
 )
@@ -47,4 +48,20 @@ func TestGen(t *testing.T) {
 		t.Error(err)
 		return
 	}
+}
+
+func TestParam(t *testing.T) {
+	params := make(map[string]string)
+	for _, v := range strings.Split("module=demo", ",") {
+		var param string
+		var value string
+		if i := strings.Index(v, "="); i >= 0 {
+			value = v[i+1:]
+			param = v[0:i]
+		}
+
+		params[param] = value
+	}
+
+	log.Println(params)
 }

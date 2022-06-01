@@ -22,8 +22,8 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		var param string
 		var value string
 		if i := strings.Index(v, "="); i >= 0 {
-			value = param[i+1:]
-			param = param[0:i]
+			value = v[i+1:]
+			param = v[0:i]
 		}
 
 		params[param] = value
