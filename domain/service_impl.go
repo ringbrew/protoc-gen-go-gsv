@@ -36,7 +36,7 @@ func (s *[[.serviceName]]) Description() service.Description {
 	}
 }`
 
-const serviceDefineImpl = `package example
+const serviceDefineImpl = `package [[.packageName]]
 
 const (
 	[[.serviceName]] = "[[.packageName]].[[.protoServiceName]]"
