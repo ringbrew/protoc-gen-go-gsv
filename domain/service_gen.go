@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"google.golang.org/protobuf/compiler/protogen"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -53,45 +54,44 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 			}
 
 			deliveryFileName := params["module"] + "/internal/delivery/" + string(f.GoPackageName) + "/" + toSnakeCase(s.GoName) + ".impl.go"
-			// 已经创建的不管.
-			if _, err := os.Stat(deliveryFileName); err == nil {
-				continue
+			if _, err := os.Stat(deliveryFileName); err != nil && os.IsNotExist(err) {
+				log.Println("[INFO] generating:", deliveryFileName)
+				deliveryFile := plugin.NewGeneratedFile(deliveryFileName, f.GoImportPath)
+				tmpl, err := template.New("serviceGenImpl").Delims("[[", "]]").Parse(serviceGenImpl)
+				if err != nil {
+					return err
+				}
+				if err := tmpl.Execute(&tmplResult, map[string]interface{}{
+					"module":           params["module"],
+					"packageName":      f.GoPackageName,
+					"serviceName":      serviceName,
+					"protoServiceName": s.GoName,
+				}); err != nil {
+					return err
+				}
+				deliveryFile.P(tmplResult.String())
 			}
-			deliveryFile := plugin.NewGeneratedFile(deliveryFileName, f.GoImportPath)
-			tmpl, err := template.New("serviceGenImpl").Delims("[[", "]]").Parse(serviceGenImpl)
-			if err != nil {
-				return err
-			}
-			if err := tmpl.Execute(&tmplResult, map[string]interface{}{
-				"module":           params["module"],
-				"packageName":      f.GoPackageName,
-				"serviceName":      serviceName,
-				"protoServiceName": s.GoName,
-			}); err != nil {
-				return err
-			}
-			deliveryFile.P(tmplResult.String())
 
 			serviceDefineFileName := string(f.GoImportPath) + "/" + toSnakeCase(s.GoName) + ".define.go"
-			// 已经创建的不管.
-			if _, err := os.Stat(deliveryFileName); err == nil {
-				continue
+			if _, err := os.Stat(serviceDefineFileName); err != nil && os.IsNotExist(err) {
+				log.Println("[INFO] generating:", serviceDefineFileName)
+
+				serviceDefineFile := plugin.NewGeneratedFile(serviceDefineFileName, f.GoImportPath)
+				defineTmpl, err := template.New("serviceDefineImpl").Delims("[[", "]]").Parse(serviceDefineImpl)
+				if err != nil {
+					return err
+				}
+				tmplResult.Reset()
+				if err := defineTmpl.Execute(&tmplResult, map[string]interface{}{
+					"module":           params["module"],
+					"packageName":      f.GoPackageName,
+					"serviceName":      serviceName,
+					"protoServiceName": s.GoName,
+				}); err != nil {
+					return err
+				}
+				serviceDefineFile.P(tmplResult.String())
 			}
-			serviceDefineFile := plugin.NewGeneratedFile(serviceDefineFileName, f.GoImportPath)
-			defineTmpl, err := template.New("serviceDefineImpl").Delims("[[", "]]").Parse(serviceDefineImpl)
-			if err != nil {
-				return err
-			}
-			tmplResult.Reset()
-			if err := defineTmpl.Execute(&tmplResult, map[string]interface{}{
-				"module":           params["module"],
-				"packageName":      f.GoPackageName,
-				"serviceName":      serviceName,
-				"protoServiceName": s.GoName,
-			}); err != nil {
-				return err
-			}
-			serviceDefineFile.P(tmplResult.String())
 		}
 	}
 
