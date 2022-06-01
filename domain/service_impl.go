@@ -4,7 +4,7 @@ const serviceGenImpl = `package [[.packageName]]
 
 import (
 	"github.com/ringbrew/gsv/service"
-	"github.com/ringbrew/gsv/service/example/export/example"
+	"[[.module]]/export/example"
 	"google.golang.org/grpc"
 )
 
@@ -12,19 +12,19 @@ type [[.serviceName]] struct {
 	[[.packageName]].Unimplemented[[.serviceName]]Server
 }
 
-func NewService() service.Service {
-	return &Service{}
+func New[[.serviceName]]() service.Service {
+	return &[[.serviceName]]{}
 }
 
-func (s *Service) Name() string {
+func (s *[[.serviceName]]) Name() string {
 	return "[[.packageName]].[[.serviceName]]"
 }
 
-func (s *Service) Remark() string {
+func (s *[[.serviceName]]) Remark() string {
 	return ""
 }
 
-func (s *Service) Description() service.Description {
+func (s *[[.serviceName]]) Description() service.Description {
 	return service.Description{
 		Valid:           true,
 		GrpcServiceDesc: []grpc.ServiceDesc{[[.packageName]].[[.serviceName]]_ServiceDesc},
