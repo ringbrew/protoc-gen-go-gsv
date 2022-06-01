@@ -35,3 +35,10 @@ func (s *[[.serviceName]]) Description() service.Description {
 		GrpcGateway:     nil,
 	}
 }`
+
+const serviceDefineImpl = `package example
+
+const (
+	[[.serviceName]] = "[[.packageName]].[[.protoServiceName]]"
+)
+`
