@@ -3,7 +3,6 @@ package domain
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"os"
@@ -46,8 +45,6 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 	}
 
 	for _, f := range plugin.Files {
-		serviceDefineInfo := make(map[string]string)
-
 		for _, s := range f.Services {
 			var tmplResult bytes.Buffer
 
@@ -75,15 +72,9 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 				deliveryFile.P(tmplResult.String())
 			}
 
-			serviceDefineInfo[s.GoName] = fmt.Sprintf("%s.%s", f.GoPackageName, s.GoName)
-		}
-
-		serviceDefineFileName := string(f.GoImportPath) + "/" + "service" + ".define.go"
-		if _, err := os.Stat(serviceDefineFileName); err != nil && os.IsNotExist(err) {
-			log.Println("[INFO] generating:", serviceDefineFileName)
-			var tmplResult bytes.Buffer
-
-			serviceDefineFile := plugin.NewGeneratedFile(serviceDefineFileName, f.GoImportPath)
+			defineFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + toSnakeCase(s.GoName) + ".define.go"
+			log.Println("[INFO] generating:", defineFileName)
+			serviceDefineFile := plugin.NewGeneratedFile(defineFileName, f.GoImportPath)
 			defineTmpl, err := template.New("serviceDefineImpl").Delims("[[", "]]").Parse(serviceDefineImpl)
 			if err != nil {
 				return err
@@ -92,7 +83,7 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 			if err := defineTmpl.Execute(&tmplResult, map[string]interface{}{
 				"module":      params["module"],
 				"packageName": f.GoPackageName,
-				"serviceInfo": serviceDefineInfo,
+				"serviceName": serviceName,
 			}); err != nil {
 				return err
 			}
