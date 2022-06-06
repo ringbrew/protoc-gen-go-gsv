@@ -3,6 +3,7 @@ package domain
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"os"
@@ -45,6 +46,8 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 	}
 
 	for _, f := range plugin.Files {
+		serviceDefineInfo := make(map[string]string)
+
 		for _, s := range f.Services {
 			var tmplResult bytes.Buffer
 
@@ -72,28 +75,29 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 				deliveryFile.P(tmplResult.String())
 			}
 
-			serviceDefineFileName := string(f.GoImportPath) + "/" + toSnakeCase(s.GoName) + ".define.go"
-			if _, err := os.Stat(serviceDefineFileName); err != nil && os.IsNotExist(err) {
-				log.Println("[INFO] generating:", serviceDefineFileName)
+			serviceDefineInfo[s.GoName] = fmt.Sprintf("%s.%s", f.GoPackageName, s.GoName)
+		}
 
-				serviceDefineFile := plugin.NewGeneratedFile(serviceDefineFileName, f.GoImportPath)
-				defineTmpl, err := template.New("serviceDefineImpl").Delims("[[", "]]").Parse(serviceDefineImpl)
-				if err != nil {
-					return err
-				}
-				tmplResult.Reset()
-				if err := defineTmpl.Execute(&tmplResult, map[string]interface{}{
-					"module":           params["module"],
-					"packageName":      f.GoPackageName,
-					"serviceName":      serviceName,
-					"protoServiceName": s.GoName,
-				}); err != nil {
-					return err
-				}
-				serviceDefineFile.P(tmplResult.String())
+		serviceDefineFileName := string(f.GoImportPath) + "/" + "service" + ".define.go"
+		if _, err := os.Stat(serviceDefineFileName); err != nil && os.IsNotExist(err) {
+			log.Println("[INFO] generating:", serviceDefineFileName)
+			var tmplResult bytes.Buffer
+
+			serviceDefineFile := plugin.NewGeneratedFile(serviceDefineFileName, f.GoImportPath)
+			defineTmpl, err := template.New("serviceDefineImpl").Delims("[[", "]]").Parse(serviceDefineImpl)
+			if err != nil {
+				return err
 			}
+			tmplResult.Reset()
+			if err := defineTmpl.Execute(&tmplResult, map[string]interface{}{
+				"module":      params["module"],
+				"packageName": f.GoPackageName,
+				"serviceInfo": serviceDefineInfo,
+			}); err != nil {
+				return err
+			}
+			serviceDefineFile.P(tmplResult.String())
 		}
 	}
-
 	return nil
 }
