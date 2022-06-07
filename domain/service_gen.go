@@ -53,7 +53,7 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 				serviceName = serviceName[len(f.GoPackageName):]
 			}
 
-			deliveryFileName := params["module"] + "/internal/delivery/" + string(f.GoPackageName) + "/" + toSnakeCase(s.GoName) + ".impl.go"
+			deliveryFileName := params["module"] + "/internal/delivery/" + string(f.GoPackageName) + "/" + toSnakeCase(s.GoName) + ".grpc.impl.go"
 			if _, err := os.Stat(deliveryFileName); err != nil && os.IsNotExist(err) {
 				log.Println("[INFO] generating:", deliveryFileName)
 				deliveryFile := plugin.NewGeneratedFile(deliveryFileName, f.GoImportPath)
