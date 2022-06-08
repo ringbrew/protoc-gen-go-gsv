@@ -10,11 +10,11 @@ import (
 )
 
 type [[.serviceName]] struct {
-	ctx *domain.ServiceContext
+	ctx *domain.UseCaseContext
 	[[.packageName]].Unimplemented[[.protoServiceName]]Server
 }
 
-func New[[.serviceName]](ctx *domain.ServiceContext) service.Service {
+func New[[.serviceName]](ctx *domain.UseCaseContext) service.Service {
 	return &[[.serviceName]]{
 		ctx: ctx,
 	}
