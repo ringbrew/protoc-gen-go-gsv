@@ -54,6 +54,12 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		if err != nil {
 			return err
 		}
+
+		log.Println("message:", f.Messages)
+		for _, v := range f.Messages {
+			log.Println(v.GoIdent.GoName)
+		}
+
 		tmplBuf.Reset()
 		if err := defineTmpl.Execute(&tmplBuf, map[string]interface{}{
 			"packageName": f.GoPackageName,
@@ -74,7 +80,6 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 			relDeliveryFileName := "internal/delivery/" + string(f.GoPackageName) + "/" + toSnakeCase(s.GoName) + ".grpc.impl.go"
 			deliveryFileName := params["module"] + "/" + relDeliveryFileName
 			if _, err := os.Stat(relDeliveryFileName); err != nil && os.IsNotExist(err) {
-				log.Println("[INFO] generating:", deliveryFileName)
 				deliveryFile := plugin.NewGeneratedFile(deliveryFileName, f.GoImportPath)
 				tmpl, err := template.New("serviceGenImpl").Delims("[[", "]]").Parse(serviceGenImpl)
 				if err != nil {
