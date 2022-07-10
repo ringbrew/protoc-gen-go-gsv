@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
-	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -54,12 +53,6 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		if err != nil {
 			return err
 		}
-
-		log.Println("message:", f.Messages)
-		for _, v := range f.Messages {
-			log.Println(v.GoIdent.GoName)
-		}
-
 		tmplBuf.Reset()
 		if err := defineTmpl.Execute(&tmplBuf, map[string]interface{}{
 			"packageName": f.GoPackageName,
