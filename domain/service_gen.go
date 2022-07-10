@@ -63,7 +63,7 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		tmplBuf.Reset()
 		if err := defineTmpl.Execute(&tmplBuf, map[string]interface{}{
 			"packageName": f.GoPackageName,
-			"message:":    f.Messages,
+			"message":     f.Messages,
 		}); err != nil {
 			return err
 		}
