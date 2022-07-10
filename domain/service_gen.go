@@ -46,20 +46,22 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 	}
 
 	for _, f := range plugin.Files {
-		var tmplResult bytes.Buffer
+		var tmplBuf bytes.Buffer
 
 		pbJsonFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + fmt.Sprintf("%s.pbjson.go", f.GoPackageName)
-		log.Println("[INFO] generating jsonpb:", pbJsonFileName)
 		pbJsonFile := plugin.NewGeneratedFile(pbJsonFileName, f.GoImportPath)
 		defineTmpl, err := template.New("pbJsonTmpl").Delims("[[", "]]").Parse(pbJsonTmpl)
 		if err != nil {
 			return err
 		}
-		tmplResult.Reset()
-		if err := defineTmpl.Execute(&tmplResult, f.Messages); err != nil {
+		tmplBuf.Reset()
+		if err := defineTmpl.Execute(&tmplBuf, map[string]interface{}{
+			"packageName": f.GoPackageName,
+			"message:":    f.Messages,
+		}); err != nil {
 			return err
 		}
-		pbJsonFile.P(tmplResult.String())
+		pbJsonFile.P(tmplBuf.String())
 
 		for _, s := range f.Services {
 			var tmplResult bytes.Buffer
@@ -90,7 +92,7 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 			}
 
 			defineFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + toSnakeCase(s.GoName) + ".define.go"
-			log.Println("[INFO] generating:", defineFileName)
+
 			serviceDefineFile := plugin.NewGeneratedFile(defineFileName, f.GoImportPath)
 			defineTmpl, err := template.New("serviceDefineImpl").Delims("[[", "]]").Parse(serviceDefineImpl)
 			if err != nil {
