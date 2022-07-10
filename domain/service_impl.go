@@ -50,3 +50,13 @@ const (
 	[[.serviceName]]Name = "[[.packageName]].[[.protoServiceName]]"
 )
 `
+
+const pbJsonTmpl = `package [[.packageName]]
+
+import "google.golang.org/protobuf/encoding/protojson"
+
+[[range $i,$m := $.message]]
+func (x *[[$m.GoIdent.GoName]]) MarshalJSON() ([]byte, error) {
+	return protojson.MarshalOptions{EmitUnpopulated: true}.Marshal(x)
+}
+`

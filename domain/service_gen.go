@@ -3,6 +3,7 @@ package domain
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"os"
@@ -45,6 +46,21 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 	}
 
 	for _, f := range plugin.Files {
+		var tmplResult bytes.Buffer
+
+		pbJsonFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + fmt.Sprintf("%s.pbjson.go", f.GoPackageName)
+		log.Println("[INFO] generating jsonpb:", pbJsonFileName)
+		pbJsonFile := plugin.NewGeneratedFile(pbJsonFileName, f.GoImportPath)
+		defineTmpl, err := template.New("pbJsonTmpl").Delims("[[", "]]").Parse(pbJsonTmpl)
+		if err != nil {
+			return err
+		}
+		tmplResult.Reset()
+		if err := defineTmpl.Execute(&tmplResult, f.Messages); err != nil {
+			return err
+		}
+		pbJsonFile.P(tmplResult.String())
+
 		for _, s := range f.Services {
 			var tmplResult bytes.Buffer
 
