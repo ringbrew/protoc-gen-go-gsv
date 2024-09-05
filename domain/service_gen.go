@@ -50,6 +50,9 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		d, _ := json.Marshal(f)
 		log.Println(string(d))
 
+		log.Println(f.GoPackageName)
+		log.Println(f.GoImportPath)
+
 		var tmplBuf bytes.Buffer
 
 		pbJsonFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + fmt.Sprintf("%s.pbjson.go", f.GoPackageName)
