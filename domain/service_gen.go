@@ -2,9 +2,11 @@ package domain
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -45,6 +47,9 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 	}
 
 	for _, f := range plugin.Files {
+		d, _ := json.Marshal(f)
+		log.Println(string(d))
+
 		var tmplBuf bytes.Buffer
 
 		pbJsonFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + fmt.Sprintf("%s.pbjson.go", f.GoPackageName)
