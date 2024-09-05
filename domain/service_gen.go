@@ -2,11 +2,9 @@ package domain
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"google.golang.org/protobuf/compiler/protogen"
-	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -46,31 +44,25 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		return strings.ToLower(snake)
 	}
 
-	log.Println(params["module"])
-
 	for _, f := range plugin.Files {
-		d, _ := json.Marshal(f)
-		log.Println(string(d))
-
-		log.Println(f.GoPackageName)
-		log.Println(f.GoImportPath)
-
 		var tmplBuf bytes.Buffer
 
-		pbJsonFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + fmt.Sprintf("%s.pbjson.go", f.GoPackageName)
-		pbJsonFile := plugin.NewGeneratedFile(pbJsonFileName, f.GoImportPath)
-		defineTmpl, err := template.New("pbJsonTmpl").Delims("[[", "]]").Parse(pbJsonTmpl)
-		if err != nil {
-			return err
+		if strings.HasPrefix(string(f.GoImportPath), params["module"]) {
+			pbJsonFileName := params["module"] + "/export/" + string(f.GoPackageName) + "/" + fmt.Sprintf("%s.pbjson.go", f.GoPackageName)
+			pbJsonFile := plugin.NewGeneratedFile(pbJsonFileName, f.GoImportPath)
+			defineTmpl, err := template.New("pbJsonTmpl").Delims("[[", "]]").Parse(pbJsonTmpl)
+			if err != nil {
+				return err
+			}
+			tmplBuf.Reset()
+			if err := defineTmpl.Execute(&tmplBuf, map[string]interface{}{
+				"packageName": f.GoPackageName,
+				"message":     f.Messages,
+			}); err != nil {
+				return err
+			}
+			pbJsonFile.P(tmplBuf.String())
 		}
-		tmplBuf.Reset()
-		if err := defineTmpl.Execute(&tmplBuf, map[string]interface{}{
-			"packageName": f.GoPackageName,
-			"message":     f.Messages,
-		}); err != nil {
-			return err
-		}
-		pbJsonFile.P(tmplBuf.String())
 
 		for _, s := range f.Services {
 			var tmplResult bytes.Buffer
