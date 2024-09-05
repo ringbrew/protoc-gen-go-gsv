@@ -46,6 +46,8 @@ func (sg ServiceGen) Generate(plugin *protogen.Plugin) error {
 		return strings.ToLower(snake)
 	}
 
+	log.Println(params["module"])
+
 	for _, f := range plugin.Files {
 		d, _ := json.Marshal(f)
 		log.Println(string(d))
