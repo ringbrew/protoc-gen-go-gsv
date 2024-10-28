@@ -59,5 +59,9 @@ import "google.golang.org/protobuf/encoding/protojson"
 func (x *[[$m.GoIdent.GoName]]) MarshalJSON() ([]byte, error) {
 	return protojson.MarshalOptions{UseEnumNumbers: true, EmitUnpopulated: true}.Marshal(x)
 }
+
+func (x *[[$m.GoIdent.GoName]]) UnmarshalJSON(input []byte) error {
+	return protojson.UnmarshalOptions{}.Unmarshal(input, x)
+}
 [[end]]
 `
