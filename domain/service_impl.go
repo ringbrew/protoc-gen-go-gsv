@@ -61,7 +61,7 @@ func (x *[[$m.GoIdent.GoName]]) MarshalJSON() ([]byte, error) {
 }
 
 func (x *[[$m.GoIdent.GoName]]) UnmarshalJSON(input []byte) error {
-	return protojson.UnmarshalOptions{}.Unmarshal(input, x)
+	return protojson.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(input, x)
 }
 [[end]]
 `
